@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Traffic tutorial</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+    integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous">
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
+  </script>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous" />
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+    integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous">
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+  <link rel="stylesheet" type="text/css" href="https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.57.0/maps/maps.css" />
+  <link rel="stylesheet" type="text/css"
+    href="https://api.tomtom.com/maps-sdk-for-web/cdn/plugins/SearchBox/2.23.1//SearchBox.css" />
+  <link rel="stylesheet" type="text/css"
+    href="https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.57.0/maps/css-styles/traffic-incidents.css" />
+  <link rel="stylesheet" type="text/css"
+    href="https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.57.0/maps/css-styles/routing.css" />
+  <link rel="stylesheet" type="text/css"
+    href="https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.57.0/maps/css-styles/poi.css" />
+  <link rel="stylesheet" type="text/css" href="styles.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.57.0/maps/maps-web.min.js"></script>
+
+
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="sidebar col-sm-4" style="background: white">
+        <div id="first-row" class="row p-1">
+          <div style="font-weight: bold; font-size: 27px; color: midnightblue;position:relative;left:65px" class="col py-2">
+             Traffic Tracker
+          </div>
+        </div>
+        <div id="secondary-row" class="row">
+          <div class="col pt-3 label">
+            <span style="font-weight: bold; font-size: 16px; color: midnightblue">Choose your location</span>
+            <div id="search-panel-container" class="row">
+              <div id="search-panel" class="container-fluid pb-4"></div>
+            </div>
+          </div>
+        </div>
+        <div class="row row-border">
+          <div class="col py-3 label">
+            <span class="show-traffic-layers" style="color: midnightblue">Show traffic layers</span>
+            <div class="row align-items-center pt-2">
+              <div class="col-sm-2">
+                <img class="traffic-icon" src="img/traffic_lights.png" alt="" />
+              </div>
+              <div class="col pt-2">
+                <label for="incidents-toggle" class="traffic-text" >Traffic incidents</label>
+              </div>
+              <div class="col-sm-3 pt-2 text-right">
+                <label class="switch">
+                  <input id="incidents-toggle" type="checkbox" />
+                  <span class="toggle round"></span>
+                </label>
+              </div>
+            </div>
+            <div class="row align-items-center pt-2">
+              <div class="col-sm-2">
+                <img class="traffic-icon" src="img/traffic-flow.png" alt="" />
+              </div>
+              <div class="col pt-2">
+                <label for="flow-toggle" class="traffic-text">Traffic flow</label>
+              </div>
+              <div class="col-sm-3 pt-2 text-right">
+                <label class="switch">
+                  <input id="flow-toggle" type="checkbox" />
+                  <span class="toggle round"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="background:200px" id="weatherInfo">
+          <p>Loading weather data...</p>
+        </div>
+        <div class="py-3 row row-border">
+          <div class="col">
+            <span class="show-traffic-layers" style="color: midnightblue">Bounding box for marking a point</span>
+            <button style="background-color: darkgreen" id="bounding-box-button" type="button" class="btn btn-block my-2">
+              MARK A POINT
+            </button>
+          </div>
+        </div>
+        <div>
+          <button style="background-color: midnightblue" onClick="flyToCurrentPosition()" type="button" class="btn btn-block my-2">
+            Fetch Nearby incidents
+          </button>
+        </div>
+
+        <script>
+          function toLogin(){
+            window.location.href = '../traffic-tutorial-web-sdk/signIn.html';
+          }
+        </script>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <div>
+          <button style="background-color: red" onClick="toLogin()" type="button" class="btn btn-block my-2">
+            Sign Out
+          </button>
+        </div>
+
+
+
+
+
+
+        <script>
+
+          function displayNearbyIncidentsInPopup(nearbyIncidents) {
+            nearbyIncidents.forEach(incident => {
+              const marker = new tt.Marker().setLngLat([incident.longitude, incident.latitude]).addTo(map);
+
+              marker.getElement().addEventListener('click', () => {
+                const popup = new tt.Popup({ className: 'tt-popup', offset: 20 })
+                        .setHTML(`
+                    <h3>Incident</h3>
+                    <p>Details: ${incident.details}</p>
+                    <p>Latitude: ${incident.latitude}</p>
+                    <p>Longitude: ${incident.longitude}</p>
+                    <hr>
+                `)
+                        .addTo(map)
+                        .setLngLat([incident.longitude, incident.latitude]);
+              });
+            });
+          }
+
+
+
+          function fetchNearbyIncidents(userLocation) {
+            fetch('http://localhost:8081/incidents/all')
+                    .then(response => {
+                      if (response.ok) {
+                        return response.json();
+                      }
+                      throw new Error('Failed to fetch incidents');
+                    })
+                    .then(data => {
+                      const nearbyIncidents = data.filter(incident => {
+                        const incidentLocation = { latitude: incident.latitude, longitude: incident.longitude };
+                        const distance = calculateDistance(userLocation, incidentLocation);
+                        const proximityThreshold = 5;
+                        return distance <= proximityThreshold;
+                      });
+
+                      displayNearbyIncidents(nearbyIncidents);
+                    })
+                    .catch(error => {
+                      console.error('Error fetching nearby incidents:', error);
+                    });
+          }
+
+
+          document.getElementById('showIncidentsButton').addEventListener('click', () => {
+
+            navigator.geolocation.getCurrentPosition(
+                    position => {
+                      const { latitude, longitude } = position.coords;
+                      const userLocation = { latitude, longitude };
+                      fetchNearbyIncidents(userLocation);
+                    },
+                    error => {
+                      console.error('Error getting user location:', error);
+                    }
+            );
+          });
+
+        </script>
+
+
+
+      </div>
+      <div class="col" id="map"></div>
+      <div id="popup-wrapper">
+      </div>
+    </div>
+  </div>
+
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.2.1/bootstrap-slider.min.js"></script>
+  <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.57.0/maps/maps-web.min.js"></script>
+  <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/5.x/5.57.0/services/services-web.min.js"></script>
+  <script src="https://api.tomtom.com/maps-sdk-for-web/cdn/plugins/SearchBox/2.23.1/SearchBox-web.js"></script>
+
+  <script src="traffic.js"></script>
+</body>
+
+</html>

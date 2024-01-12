@@ -1,0 +1,144 @@
+<head>
+    <link rel="stylesheet" type="text/css" href="signIn.css" />
+</head>
+<body>
+<br>
+<br>
+<div class="cont">
+    <div class="form sign-in">
+        <h2>WELCOME </h2>
+        <label>
+            <span>Email</span>
+            <input type="email" id="emailInput" />
+        </label>
+        <label>
+            <span>Password</span>
+            <input type="password" id="passwordInput" />
+        </label>
+        <p class="forgot-pass">Forgot password?</p>
+        <button type="button" class="submit">Sign In</button>
+        <script>
+            const signInButton = document.querySelector('.submit');
+
+            signInButton.addEventListener('click', async () => {
+                const emailInput = document.querySelector('#emailInput').value;
+                const passwordInput = document.querySelector('#passwordInput').value;
+
+                const user = {
+                    email: emailInput,
+                    pass: passwordInput
+                };
+
+                try {
+                    const response = await fetch('http://localhost:8081/users/authenticate', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(user)
+                    });
+
+                    if (response.ok) {
+
+                        console.log('User authenticated successfully');
+                        window.location.href = '../traffic-tutorial-web-sdk/traffic.html';
+                    } else {
+
+                        const errorData = await response.json();
+                        console.error('Authentication failed:', errorData);
+                    }
+                } catch (error) {
+                    console.error('Error during authentication:', error);
+                }
+            });
+
+        </script>
+
+    </div>
+    <div class="sub-cont">
+        <div class="img">
+            <div class="img__text m--up">
+
+                <h3>Don't have an account? Please Sign up!</h3>
+            </div>
+            <div class="img__text m--in">
+                <h3>If you already has an account, just sign in.</h3>
+            </div>
+            <div class="img__btn">
+                <span class="m--up">Sign Up</span>
+                <span class="m--in">Sign In</span>
+            </div>
+        </div>
+        <div class="form sign-up">
+            <h2>Create your Account</h2>
+            <label>
+                <span>nom</span>
+                <input type="text" id="nomInput" />
+            </label>
+            <label>
+                <span>prenom</span>
+                <input type="text" id="prenomInput" />
+            </label>
+            <label>
+                <span>Email</span>
+                <input type="email" id="emaillInput" />
+            </label>
+            <label>
+                <span>Password</span>
+                <input type="password" id="passworddInput" />
+            </label>
+            <button type="button" class="submit" onclick="submitForm()">Sign Up</button>
+        </div>
+
+
+
+        <script>
+            function submitForm() {
+                const nom = document.getElementById('nomInput').value;
+                const prenom = document.getElementById('prenomInput').value;
+                const email = document.getElementById('emaillInput').value;
+                const password = document.getElementById('passworddInput').value;
+
+                const userData = {
+                    nom: nom,
+                    prenom: prenom,
+                    email: email,
+                    pass: password
+                };
+
+                fetch('http://localhost:8081/users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(userData)
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        }
+                        throw new Error('Failed to create user');
+                    })
+                    .then(data => {
+                        console.log('User created:', data);
+                        location.reload();
+
+                    })
+                    .catch(error => {
+                        window.alert("Impossible de créer un tel utilisateur")
+                        console.error('Error creating user:', error);
+
+                    });
+
+            }
+        </script>
+    </div>
+</div>
+</body>
+
+
+<script>
+    document.querySelector('.img__btn').addEventListener('click', function() {
+        document.querySelector('.cont').classList.toggle('s--signup');
+    });
+</script>
